@@ -1,11 +1,23 @@
 server:
   port: ${PORT:${SERVER_PORT:0}}
 
-#idRandom: ${random.value}
-
 spring:
+  rabbitmq:
+    username: guest
+    password: guest
+    host: localhost
+    port: 5672
+  zipkin:
+    baseUrl: http://localhost:9411/
   application:
     name: api-catalog
+  data:
+    mongodb:
+      username: usrcatalogmongo
+      password: pwdcatalogmongo
+      database: catalogdevmongo
+      port: 27018
+      host: localhost
 
 eureka:
   client:
@@ -20,14 +32,48 @@ management:
   endpoints:
     web:
       exposure:
-        include: info
-  info:
-    env:
-      enabled: true
+        include: *
 
-info:
-  app:
-    name: api catalogo
-    version: 1.0.0
-    description: Catálogo de películas
+resilience4j.circuitbreaker:
+  instances:
+    clientMovie:
+      allowHealthIndicatorToFail: false
+      registerHealthIndicator: true
+      slidingWindowSize: 5
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: TIME_BASED
+      minimumNumberOfCalls: 20
+      waitDurationInOpenState: 50s
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 10
+    clientSerie:
+      allowHealthIndicatorToFail: false
+      registerHealthIndicator: true
+      slidingWindowSize: 5
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: TIME_BASED
+      minimumNumberOfCalls: 20
+      waitDurationInOpenState: 50s
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 10
 
+resilience4j.retry:
+  instances:
+    clientMovie:
+      maxAttempts: 3
+      waitDuration: 10s
+      enableExponentialBackoff: true
+      exponentialBackoffMultiplier: 2
+      retryExceptions:
+        - java.net.ConnectException
+        - org.springframework.web.client.HttpServerErrorException
+        - java.io.IOException
+    clientSerie:
+      maxAttempts: 3
+      waitDuration: 10s
+      enableExponentialBackoff: true
+      exponentialBackoffMultiplier: 2
+      retryExceptions:
+        - java.net.ConnectException
+        - org.springframework.web.client.HttpServerErrorException
+        - java.io.IOException

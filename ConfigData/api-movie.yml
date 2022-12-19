@@ -1,20 +1,28 @@
 server:
   port: ${PORT:${SERVER_PORT:0}}
 
-#idRandom: ${random.value}
-
 spring:
+  rabbitmq:
+    username: guest
+    password: guest
+    host: localhost
+    port: 5672
+  zipkin:
+    baseUrl: http://localhost:9411/
   application:
     name: api-movie
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/movie_dev
+    url: jdbc:mysql://localhost:3306/movie-dev
     username: root
     password: root
   jpa:
     hibernate.ddl-auto: update
     generate-ddl: true
     show-sql: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
 eureka:
   client:
@@ -30,14 +38,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: info
-  info:
-    env:
-      enabled: true
-
-info:
-  app:
-    name: api movies
-    version: 1.0.0
-    description: Películas
-
+        include: *

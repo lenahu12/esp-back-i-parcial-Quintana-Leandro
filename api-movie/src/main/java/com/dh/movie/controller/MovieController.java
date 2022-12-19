@@ -27,4 +27,26 @@ public class MovieController {
     ResponseEntity<Movie> saveMovie(@RequestBody Movie movie) {
         return ResponseEntity.ok().body(movieService.save(movie));
     }
+
+    @GetMapping("/find/{id}")
+    public ResponseEntity<Movie> findMovieById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(movieService.getMovieById(id));
+    }
+
+    @PutMapping
+    public ResponseEntity updateMovie(@RequestBody Movie movie) {
+        movieService.updateMovie(movie);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Movie>> getAllMovies(){
+        return ResponseEntity.ok(movieService.getAllMovies());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteMovie(@PathVariable Long id) {
+        movieService.deleteMovie(id);
+        return ResponseEntity.ok().build();
+    }
 }
